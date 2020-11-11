@@ -7,13 +7,10 @@ The Palindrome Service is a simple REST servce that performs CRUD operations on 
 ###### Requirements:
 
 - WildFly v11
-- Keycloak v10+ and Keycloak Adapters
 
 You can download WildFly here: http://download.jboss.org/wildfly/12.0.0.Final/wildfly-12.0.0.Final.zip
-Keycloak can be downloaded here: https://downloads.jboss.org/keycloak/11.0.3/keycloak-11.0.3.zip
-Keycloak adapters can be found here: https://downloads.jboss.org/keycloak/11.0.3/adapters/keycloak-oidc/keycloak-wildfly-adapter-dist-11.0.3.zip
 
-Firstly, you will need to use Maven to build the target WAR file that is generated from the code. This should produce a WAR file called *palindrome-service.war*. Start the WildFly server and add an admin user as per the WildFly documentation. Navigate to http://localhost:9990 and click *Deployments* at the top of the WildFly manager. From here you can deploy the WAR file generated earlier. Run the Keycloak Server with port offset of 1000, such that the Keycloak server runs on port 9080. 
+Firstly, you will need to use Maven to build the target WAR file that is generated from the code. This should produce a WAR file called *palindrome-service.war*. Start the WildFly server and add an admin user as per the WildFly documentation. Navigate to http://localhost:9990 and click *Deployments* at the top of the WildFly manager. From here you can deploy the WAR file generated earlier. 
 
 
 #### How to make API calls
