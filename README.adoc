@@ -13,12 +13,35 @@ You can download WildFly here: http://download.jboss.org/wildfly/12.0.0.Final/wi
 Keycloak can be downloaded here: https://downloads.jboss.org/keycloak/11.0.3/keycloak-11.0.3.zip
 Keycloak adapters can be found here: https://downloads.jboss.org/keycloak/11.0.3/adapters/keycloak-oidc/keycloak-wildfly-adapter-dist-11.0.3.zip
 
-Firstly, you will need to use Maven to build the target WAR file that is generated from the code. This should produce a WAR file called *palindrome-service.war*. Start the WildFly server and add an admin user as per the WildFly documentation. Navigate to http://localhost:9990 and click *Deployments* at the top of the WildFly manager. From here you can deploy the WAR file generated earlier. Run the Keycloak Server with port offset of 1000, such that the Keycloak server runs on port 9080. 
+Firstly, you will need to use Maven to build the target WAR file that is generated from the code. This should produce a WAR file called *palindrome-service.war*. Start the WildFly server and add an admin user as per the WildFly documentation. Navigate to http://localhost:9990 and click *Deployments* at the top of the WildFly manager. From here you can deploy the WAR file generated earlier. Run the Keycloak Server with port offset of 1000, such that the Keycloak server runs on port 9080:
 
+```
+./standalone.sh -b 0.0.0.0 -Djboss.socket.binding.port-offset=1000
+```
+
+#### Importing Keycloak Realm Configuration
+Using the *palindrome-realm-export.json* file, you can import the configuration for Keycloak. Go to the admin console and create a new Realm. There is an option to use a file to configure the realm.
+
+#### Authenticating to the REST API
+
+All calls to the REST API are protected by Keycloak. This means that you cannot make a call to the REST Service without a JWT from Keycloak. 
+
+**Getting a token**
+```
+curl -d "client_id=service" -d "client_secret=8b717efb-5b2a-4f41-9b88-6068bb77a1e0" -d "grant_type=password" -d "username=<username>" -d password="<password>" "http://localhost:9080/auth/realms/palindrome/protocol/openid-connect/token"
+```
+
+Copy the value of access_token and use it to make your REST Calls:
+
+```
+curl -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICIwM3I1emJLTTZSNVFOVFI3UlRudU9LaGtBZlplRUdEbnp4dXZJYU5aVTZvIn0.eyJleHAiOjE2MDUxMTk4NzcsImlhdCI6MTYwNTExOTU3NywianRpIjoiOTMwZTc3NTgtYmE2Ny00ZmEyLWFmYWQtMDhhNTk3Njk2Y2Q4IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo5MDgwL2F1dGgvcmVhbG1zL3BhbGluZHJvbWUiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiMGQ4N2QyYmMtNjZiMy00ZDBjLTgxOWYtNjI4M2VhZGU3NGVlIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2VydmljZSIsInNlc3Npb25fc3RhdGUiOiIzYTg2Y2UyMi0xNzM3LTRjZmUtYjc5ZS1mNWYyMzlhNmFkMGMiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInByZWZlcnJlZF91c2VybmFtZSI6Im1hdHQifQ.e58gDBM6oEBsOpImqZthERd3_VIoQ61hATs3Ix11PnCYCXUiRqdkuYtGDWKi56Rd1Y_AaP7WTJNpE0n2Sx3rsdb7o1Rr39bgg8bn36NB_p55mEpdP_7jU7iKbhN9NmSd214OOB9lQsPCI9TnVlyI9Unh4UDJJ3OdwOtz-npCO1_gbsowdvcji6ZXSQz7rt7el7udxCb4w45OnyQdw0tqU-XqbemHHAniEBFq_pxBzBnwZ8_OH3-ZnZog22oXAgAimnF-HaktNsOu9GRhp42L4-7Prp67jmR6lFnGeGy0QM1iF3v8pKUBseqti6G6TwRTOs_vLKfoQkDuMqytCMD1ZA" -H "Accept: application/x-www-form-urlencoded" -X POST -d "message=racecar" 'http://localhost:8080/palindrome-service/messages'
+Palindrome [racecar] added to messages.
+```
 
 #### How to make API calls
 
-###### GET  Get all of the Messages
+###### GET  
+**Get all of the Messages**
 The following command will list the user messages
 ```
 curl  http://localhost:8080/palindrome-service/messages/ 
