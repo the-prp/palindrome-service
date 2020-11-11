@@ -1,0 +1,83 @@
+## Palindrome Service
+
+The Palindrome Service is a simple REST servce that performs CRUD operations on messages delivered through REST calls. You can create messages, update them, delete them and get them all. The message queue size is 50. This value is hardcoded. If the total is exceeded, the first message queue item is removed and the new one is added at the end.
+
+#### How to run the service
+
+###### Requirements:
+
+- WildFly v11
+- Keycloak v10+ and Keycloak Adapters
+
+You can download WildFly here: http://download.jboss.org/wildfly/12.0.0.Final/wildfly-12.0.0.Final.zip
+Keycloak can be downloaded here: https://downloads.jboss.org/keycloak/11.0.3/keycloak-11.0.3.zip
+Keycloak adapters can be found here: https://downloads.jboss.org/keycloak/11.0.3/adapters/keycloak-oidc/keycloak-wildfly-adapter-dist-11.0.3.zip
+
+Firstly, you will need to use Maven to build the target WAR file that is generated from the code. This should produce a WAR file called *palindrome-service.war*. Start the WildFly server and add an admin user as per the WildFly documentation. Navigate to http://localhost:9990 and click *Deployments* at the top of the WildFly manager. From here you can deploy the WAR file generated earlier. Run the Keycloak Server with port offset of 1000, such that the Keycloak server runs on port 9080. 
+
+
+#### How to make API calls
+
+###### GET  Get all of the Messages
+The following command will list the user messages
+```
+curl  http://localhost:8080/palindrome-service/messages/ 
+```
+Example Output:
+```
+Messages:
+1. racecar
+2. 123321
+```
+
+
+###### POST 
+**Create A Message**
+Adds a message to the queue using the form parameter *message*. If the message is not a palindrome, it will not be added. An error will be returned. 
+```
+curl -X POST -d "message=racecar"  http://localhost:8080/palindrome-service/messages/
+```
+Example Output:
+```
+Palindrome [123321] added to messages.
+```
+
+
+###### POST 
+**Update a message**
+Updates the message provided in the path parameter with a form parameter called *updatedMessage*. An error will be returned if the message is not a palindrome.
+```
+curl -X POST -d "updatedMessage=kayak"  http://localhost:8080/palindrome-service/messages/racecar
+```
+Example Output:
+```
+Palindrome [racecar] replaced with [kayak]
+```
+
+
+###### DELETE
+**Delete the message queue elements**
+Deletes the list of messages in the queue.
+```
+curl -X DELETE http://localhost:8080/palindrome-service/messages/
+```
+Example Output
+```
+Message has been cleared.
+```
+
+
+#### DELETE
+**Delete a specific message from the queue**
+Deletes a message defined in the path parameter if it exists.
+```
+curl -X DELETE http://localhost:8080/palindrome-service/messages/kayak
+```
+Example Output:
+```
+Message [kayak] has been removed.
+```
+
+
+
+
