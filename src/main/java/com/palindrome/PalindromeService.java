@@ -127,9 +127,9 @@ public class PalindromeService {
      * Removes a message from the queue.
      * @param message The message to be removed
      */
-    public void deleteMessage(String message) {
+    public boolean deleteMessage(String message) {
         LOG.info(String.format("Removing [%s] from messages.", message));
-        messages.remove(message);
+        return messages.remove(message);
     }
 
     /**

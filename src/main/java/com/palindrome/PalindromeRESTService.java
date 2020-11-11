@@ -88,7 +88,7 @@ public class PalindromeRESTService {
     public Response clearMessages() {
         try {
             service.clearMessages();
-            return Response.ok("Message has been cleared.\n").build();
+            return Response.ok("Messages have been cleared.\n").build();
         } catch (Exception e) {
             System.out.println(e.getMessage());
             Response response = Response.ok(e.getMessage()).build();
@@ -107,8 +107,12 @@ public class PalindromeRESTService {
     @Produces(MediaType.APPLICATION_FORM_URLENCODED)
     public Response deleteMessage(@PathParam("message") String message) {
         try {
-            service.deleteMessage(message);
-            return Response.ok(String.format("Message [%s] has been removed.\n", message)).build();
+            boolean wasRemoved = service.deleteMessage(message);
+            if (wasRemoved) {
+                return Response.ok(String.format("Message [%s] has been removed.\n", message)).build();
+            } else {
+                return Response.ok(String.format("Message [%s] was not removed. It may not exist anymore", message)).build();
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
             Response response = Response.ok(e.getMessage()).build();
