@@ -1,0 +1,13 @@
+{
+	"realm": "palindrome",
+	"resource": "service",
+	"auth-server-url": "http://localhost:9080/auth",
+    "enable-basic-auth": true,
+	"ssl-required": "none",
+	"enable-basic-auth" : true,
+	"credentials" : {
+      "secret" : "8b717efb-5b2a-4f41-9b88-6068bb77a1e0"
+    },
+	"allow-any-hostname": false
+	
+}

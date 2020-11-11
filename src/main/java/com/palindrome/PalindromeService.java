@@ -101,6 +101,11 @@ public class PalindromeService {
         if (newMessage == null || newMessage.isEmpty()) {
             throw new Exception("Message was not provided");
         }
+        
+        // create the message before we try to update
+        if (messages.isEmpty()) {
+            throw new Exception("Message queue is empty. Please create a message first.");
+        }
 
         int index = messages.indexOf(oldMessage);
 
