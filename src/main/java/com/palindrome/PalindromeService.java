@@ -113,7 +113,7 @@ public class PalindromeService {
         }
 
         if (isPalindrome(newMessage)) {
-            LOG.info(String.format("Replacing %s with %s in the message queue.", newMessage, oldMessage));
+            LOG.info(String.format("Replacing %s with %s in the message queue.", oldMessage, newMessage));
             messages.set(index, newMessage);
         }
     }
