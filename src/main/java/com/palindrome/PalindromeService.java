@@ -110,7 +110,7 @@ public class PalindromeService {
         int index = messages.indexOf(oldMessage);
 
         if (index == -1) {
-            LOG.error("Message does not exist yet. Please create it.");
+            throw new Exception("Message does not exist yet. Please create it.");
         }
 
         if (newMessage.length() > MAX_CHARACTER_LENGTH) {
@@ -120,6 +120,8 @@ public class PalindromeService {
         if (isPalindrome(newMessage)) {
             LOG.info(String.format("Replacing %s with %s in the message queue.", oldMessage, newMessage));
             messages.set(index, newMessage);
+        } else {
+            throw new Exception(String.format("Message [%s] is not a palindrome.", newMessage));
         }
     }
 
@@ -154,19 +156,15 @@ public class PalindromeService {
 
     /**
      * Checks if the given string is a palindrome. Empty
-     * strings will be considered a palindrome.
+     * strings will not be considered a palindrome.
      * @param msg The message that is being verified
      * @return true if the message is a palindrome, false otherwise
      * @throws Exception If there was no message given.
      */
     private boolean isPalindrome(String msg) throws Exception {
 
-        if (msg == null) {
+        if (msg == null || msg.isEmpty()) {
             throw new Exception("Message is empty.");
-        }
-
-        if (msg.isEmpty()) {
-            return true;
         }
 
         String lowercaseMsg = msg.toLowerCase().replaceAll("\\s+", "");
