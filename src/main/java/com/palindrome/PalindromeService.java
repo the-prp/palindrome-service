@@ -4,11 +4,13 @@ import java.util.LinkedList;
 
 import org.jboss.logging.Logger;
 
+import com.palindrome.exception.PalindromeException;
+import com.palindrome.exception.PalindromeExceptionType;
+
 /**
  * Service for managing the messaging queue for a list of messages. The
  * service determines if a message is a palindrome and if so, performs
  * CRUD operations on them
- * @author matt
  *
  */
 public class PalindromeService {
@@ -38,21 +40,21 @@ public class PalindromeService {
     /**
      * Creates a message by checking if it is a palinrome first
      * @param message A string representing the message to be added
-     * @throws Exception If the message is empty, too long or not a palindrome
+     * @throws PalindromeException If the message is empty, too long or not a palindrome
      */
-    public void createMessage(String message) throws Exception {
+    public void createMessage(String message) throws PalindromeException {
         if (message == null || message.isEmpty()) {
-            throw new Exception("Message was not provided");
+            throw new PalindromeException(PalindromeExceptionType.INCORRECT_FORMAT, "Message was not provided");
         }
 
         if (message.length() > MAX_CHARACTER_LENGTH) {
-            throw new Exception("The message is too long. Try using a shorter message");
+            throw new PalindromeException(PalindromeExceptionType.INCORRECT_FORMAT, "The message is too long. Try using a shorter message");
         }
 
         if (isPalindrome(message)) {
             addMessageToQueue(message);
         } else {
-            throw new Exception(String.format("The message was not accepted because [%s] is not a palindrome.\n", message));
+            throw new PalindromeException(PalindromeExceptionType.INCORRECT_FORMAT, String.format("The message was not accepted because [%s] is not a palindrome.\n", message));
         }
     }
 
@@ -94,50 +96,56 @@ public class PalindromeService {
      * does not exist, this method will not try to add it.
      * @param oldMessage The old message
      * @param newMessage The new message
-     * @throws Exception
+     * @throws PalindromeException
      */
-    public void updateMessage(String oldMessage, String newMessage) throws Exception {
+    public void updateMessage(String oldMessage, String newMessage) throws PalindromeException {
 
         if (newMessage == null || newMessage.isEmpty()) {
-            throw new Exception("Message was not provided");
+            throw new PalindromeException(PalindromeExceptionType.INCORRECT_FORMAT, "Message was not provided");
         }
 
         int index = messages.indexOf(oldMessage);
 
         if (index == -1) {
-            throw new Exception("Message does not exist yet. Please create it.");
+            LOG.error("Message does not exist yet. Please create it.");
         }
 
         if (newMessage.length() > MAX_CHARACTER_LENGTH) {
-            throw new Exception("The message is too long. Try using a shorter message");
+            throw new PalindromeException(PalindromeExceptionType.INCORRECT_FORMAT, "The message is too long. Try using a shorter message");
         }
 
         if (isPalindrome(newMessage)) {
             LOG.info(String.format("Replacing %s with %s in the message queue.", oldMessage, newMessage));
             messages.set(index, newMessage);
         } else {
-            throw new Exception(String.format("Message [%s] is not a palindrome.", newMessage));
+            throw new PalindromeException(PalindromeExceptionType.NOT_PALINDROME, String.format("Message [%s] is not a palindrome.", newMessage));
         }
     }
 
     /**
      * Removes a message from the queue.
      * @param message The message to be removed
+     * @throws PalindromeException If the message does not exist
      */
-    public void deleteMessage(String message) {
+    public void deleteMessage(String message) throws PalindromeException {
         LOG.info(String.format("Removing [%s] from messages.", message));
+        
+        if (!messages.contains(message)) {
+        	throw new PalindromeException(PalindromeExceptionType.NOT_FOUND, "Message does not exist.");
+        }
+        
         messages.remove(message);
     }
 
     /**
      * Helper method to add the message to the queue
      * @param msg The new message
-     * @throws Exception If the message queue size is too large or it if the message queue
+     * @throws PalindromeException If the message queue size is too large or it if the message queue
      * already contains this element.
      */
-    private void addMessageToQueue(String msg) throws Exception {
+    private void addMessageToQueue(String msg) throws PalindromeException {
         if (messages.contains(msg)) {
-            throw new Exception("Message queue already contains this value.");
+            throw new PalindromeException(PalindromeExceptionType.DUPLICATE_MESSAGE, "Message queue already contains this value.");
         }
 
         if (messages.size() >= messageQueueSize) {
@@ -151,15 +159,19 @@ public class PalindromeService {
 
     /**
      * Checks if the given string is a palindrome. Empty
-     * strings will not be considered a palindrome.
+     * strings will be considered a palindrome.
      * @param msg The message that is being verified
      * @return true if the message is a palindrome, false otherwise
-     * @throws Exception If there was no message given.
+     * @throws PalindromeException If there was no message given.
      */
-    private boolean isPalindrome(String msg) throws Exception {
+    private boolean isPalindrome(String msg) throws PalindromeException {
 
-        if (msg == null || msg.isEmpty()) {
-            throw new Exception("Message is empty.");
+        if (msg == null) {
+            throw new PalindromeException(PalindromeExceptionType.INCORRECT_FORMAT, "Message is empty.");
+        }
+
+        if (msg.isEmpty()) {
+            return true;
         }
 
         String lowercaseMsg = msg.toLowerCase().replaceAll("\\s+", "");
